@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="/css/themes/metro-blue/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/css/themes/default.css">
+	<link rel="stylesheet" type="text/css" href="/css/themes/icon.css"> 
+        
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/js/outlook2.js"></script>
+      
+
+    
+    <script type="text/javascript">
+					
+				var _menus = {};
+				
+
+	
+/* var _menus = {
+		                 "menus":[
+						           {"menuid":"1","icon":"icon-role","menuname":"通讯录管理",
+							      "menus":[
+									{"menuid":"11","menuname":"部门管理","icon":"icon-log","url":"/dept"},
+									{"menuid":"12","menuname":"员工管理","icon":"icon-log","url":"/employee"},
+									{"menuid":"13","menuname":"报表统计","icon":"icon-log","url":""},
+								    ]},
+									{"menuid":"2","icon":"icon-set","menuname":"系统配置",
+							      "menus":[
+									{"menuid":"21","menuname":"用户管理","icon":"icon-log","url":"/enteruser"},
+									{"menuid":"22","menuname":"权限管理","icon":"icon-log","url":"/enteractor"}]}
+				]};*/
+		
+				
+				
+				
+			 function logout(){
+					$.ajax({
+						type:"POST",
+						datatype: "JSON",
+  						url: "http://localhost:3000/publogout",
+  					
+  						success: function(data){							
+							if("success" == data.result){
+								location='http://localhost:3000/';
+							}else{
+								$.messager.alert('错误','注销失败');
+							}					
+						},	 
+					}); 
+		 }
+	
+	</script>
+    
+    
+</head>
+
+<body class = "easyui-layout">
+    <div region = "north" split="true" border="false" style = "height:50px;
+    	background:url(../../res/images/layout-browser-hd-bg.gif) #7f99be repeat-x center 50%;"
+        line-height: 20px;color: #fff; font-family: Verdana, 微软雅黑,黑体">
+       <span style="float:right; padding-right:20px;padding-top:10px"><a class="easyui-linkbutton" iconCls="icon-redo" href="javascript:void(0)" onclick="logout()">注销</a></span>
+    	<span style="padding-left:10px; font-size: 16px; ">
+        <img src="../../res/images/blocks.gif" width="20" height="20" align="absmiddle" />智云OA后台管理</span>
+    </div>
+    
+    <div region="south" split="true" style="height: 30px; background: #D2E0F2;">
+    	<div class="footer">Copyright © 棉花糖</div>
+    </div>
+    
+    <div region="west" hide="true" split="true" title="导航菜单" style="width:180px;" id="west">
+      <div id="nav" class="easyui-accordion" fit="true" border="false"></div>
+    </div>
+    
+
+    <div id="mainPanle" region="center" style="background: #eee; overflow-y:hidden">
+      	<div id="tabs" class="easyui-tabs"  fit="true" border="false" >
+    		<div title="首页" style="padding:20px;overflow:hidden; color:red; " >
+          		<h1 style="font-size:24px;">移动OA管理系统</h1>
+        	</div>
+  		</div>
+    </div>
+    
+    <div region="east" title="其他" split="true" style="width:180px;overflow:hidden;">
+      <div class="easyui-calendar"></div>
+    </div>
+
+</body>
+
+
+</html>

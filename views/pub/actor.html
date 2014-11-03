@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="/css/themes/metro-blue/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/css/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/css/themes/default.css">
+    <link rel="stylesheet" type="text/css" href="/lib/ftitle.css">
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/easyui-lang-zh_CN.js"></script>
+
+ <script type="text/javascript">
+ 	    var url;
+ 	    
+		function newActor(){
+            $('#dlg').dialog('open').dialog('setTitle','新增角色');
+            $('#fm').form('clear');
+            url = '/addactor';
+            }
+			
+		function destroyActor(){
+            var row = $('#dg').datagrid('getSelected');
+            if (row){
+                $.messager.confirm('提示','是否确认删除?',function(r){
+                    if (r){
+                        $.post('/delactor',{actorname:row.actorname},function(result){
+                        
+                        $('#dg').datagrid('reload'); 
+                        },'json');
+                    }
+                });
+            }
+        }
+        
+        function saveActor(){
+			
+			var actorname = $('#actorname').val();
+        	var note 	  = $('#note').val();
+			var t = $('#cc').combotree('tree');
+			var n = t.tree('getChecked');
+			//var menus = JSON.stringify(n);
+			
+			//将对象数组n转换成json数组menus
+			var menus = new Array();
+			
+			for(var i =0; i < n.length; i++){				
+				menus.push({"id":n[i].id,"text":n[i].text});
+			}		
+			
+			$('#fm').form('submit',{
+				url:"/addactor?menus=" + JSON.stringify(menus),
+				success: function(result){
+                    var result = eval('('+result+')');
+                    if (result.errMsg){
+                        $.messager.show({
+                            title: '错误提示',
+                            msg: result.errMsg
+                        });
+                    } else {
+                        $('#dlg').dialog('close');        
+                        $('#dg').datagrid('reload');    
+                    }
+                }
+				})
+        }
+        	
+	  function cleardata(){
+     	$('#fm').form('clear');
+      }
+ 
+ </script>
+
+</head>
+<body> 
+    <table id="dg" title="角色列表" class="easyui-datagrid" style="width:100%;height:450px"
+            url="/getactor"
+            toolbar="#toolbar" pagination="true"
+            rownumbers="true" fitColumns="true" singleSelect="true">
+        <thead>
+            <tr>
+                <th field="actorname" width="50" align="center">角色名</th>
+                <th field="menu" width="250" align="center">权限项</th>
+                <th field="note" width="100" align="center">备注</th>
+            </tr>
+        </thead>
+    </table>
+    <div id="toolbar">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newActor()">新增角色</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyActor()">删除角色</a>
+    </div>
+    
+
+
+ <div id="dlg" class="easyui-dialog" style="width:450px;height:300px;padding:10px 20px"
+            closed="true" buttons="#dlg-buttons">
+            
+    		<div class="easyui-panel" style="padding:5px;">
+      	<form id="fm" method="post" novalidate>
+      		
+      		<div class="fitem">
+			<label>角色名:</label>
+			<input class="easyui-textbox" type="text" id = "actorname" name="actorname" style="width:200px;">
+			</div>
+     
+            <div class="fitem">
+            <label>权限项:</label>
+			<select id="cc" class="easyui-combotree" data-options="url:'/getmenus',method:'get'" multiple style="width:200px;">
+            </select>
+			</div>
+                    
+            <div class="fitem">
+			<label>备注:</label>
+			<input class="easyui-textbox" type="text" id = "note" name="note" style="height:70px;width:200px;"">
+			</div>
+
+            <div class="ftitle"></div>
+        </form>
+                        
+        <div id = dlg-buttons">
+<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick ="saveActor()" style="width:120px">保存</a>
+<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-back'" onclick = "cleardata()" style="width:120px;float:right">重置</a>
+        </div>           
+                        
+            </div>            
+ </div>
+
+
+
+</body>
+</html>

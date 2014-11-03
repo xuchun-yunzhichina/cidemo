@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="/css/themes/metro-blue/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/css/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/css/themes/default.css">
+    <link rel="stylesheet" type="text/css" href="/lib/ftitle.css">
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/easyui-lang-zh_CN.js"></script>
+
+<script type="text/javascript">
+		$(function(){						
+				$.ajax({
+					type:"GET",
+					datatype: "JSON",
+  					url: "http://localhost:3000/getsession",
+  					
+  					success: function(data){			
+						$('#curusrname').append(data.username);
+					},					
+					error: function () {  
+                   		$('#curusrname').append("未知");
+                	}  
+				});
+				
+				$.extend($.fn.validatebox.defaults.rules, {		 	
+        		/*必须和某个字段相等*/
+        			equalTo: { 
+						validator: function (value, param) { 
+						return $(param[0]).val() == value; }, message: '字段不匹配' }
+       				});
+				
+			})			
+			
+		function update(){		
+			$('#dlg').dialog('open').dialog('setTitle','更新密码');
+			
+		}
+		
+		function save(){		
+			    $('#fm').form('submit',{
+                url: '/updatepw',
+                success: function(result){
+                    var result = eval('('+result+')');
+                    if (result.errMsg){
+                        $.messager.show({
+                            title: '错误提示',
+                            msg: result.errMsg
+                        });
+                    } else {
+                        $('#dlg').dialog('close');           
+                    }
+                }
+            });
+		}
+</script>
+</head>
+<body>
+
+	<!-- 个人信息 -->
+	<div id="p" class="easyui-panel" title="个人信息" iconCls="icon-man" style="width:400px;height:200px;padding:10px;">
+		<div class="fitem">
+			<label>用户名:</label>
+			<label id = "curusrname"></label>
+		</div>
+               
+        <div class="ftitle"></div>
+        
+        <div id="dlg-buttons">
+        	<a href="javascript:void(0)" class="easyui-linkbutton c6" onclick="update()" data-options="iconCls:'icon-lock'">修改密码</a>
+        </div>   
+    </div>
+
+    <!-- 修改密码 -->
+     <div id="dlg" class="easyui-dialog" style="width:400px;padding:5px" closed="true" buttons="#dlg-buttons-check">
+     <form id="fm">
+     		 <div class="fitem">
+                <label>当前密码:</label>
+                <input id="oldpw" name="oldpw" validType= "length[6,32]" class="easyui-validatebox" required="true" type="password" value=""/>
+            </div>
+             <div class="fitem">
+                <label>新密码:</label>
+                <input id="newpw1" name="newpw1" validType= "length[6,32]" class="easyui-validatebox" required="true" type="password" value=""/>
+            </div>
+            <div class="fitem">
+                <label>新密码确认:</label>
+                <input id="newpw2" name="newpw2"  required="true" class="easyui-validatebox" type="password" validType="equalTo['#newpw1']" invalidMessage="两次输入密码不匹配"/>
+            </div>
+            
+            <div id = "result" style="color:#F00,font-size:12px"></div>
+     	</form>
+     </div>
+     
+         
+    <div id="dlg-buttons-check">
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" onclick="save()" style="width:90px"">更新</a>
+    </div>
+    
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>My FusionCharts</title>
+    <script type="text/javascript" src="/js/FusionCharts.js"></script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+</head>
+<body>
+<div id="chartdiv_01" align="center"></div>
+<script type="text/javascript">
+    var myChart = new FusionCharts("/chart/FCF_Pie3D.swf", "myChartId_02", "1000", "500");
+	var _data    = {};
+	
+	$(function(){					
+	$.ajax({
+		type:"GET",
+		datatype: "xml",
+		url: "http://localhost:3000/getadminreport1",
+		success: function(data){			
+			_data = data;
+			myChart.setDataXML(_data);
+			myChart.render("chartdiv_01");
+			
+		},					 
+	});			
+})
+	
+	
+    /*myChart.setDataXML("<graph caption='租户统计' xAxisName='' yAxisName='' showNames='1' decimalPrecision='0' formatNumberScale='0' baseFontSize='14'>" +
+            "<set name='部门列表A' value='20'/>" +
+            "<set name='部门列表B' value='15'/>" +
+            "<set name='部门列表C' value='25'/>" +
+            "<set name='部门列表D' value='10'/>" +
+            "<set name='部门列表E' value='30'/>" +
+            "<set name='部门列表F' value='10'/>" +
+            "</graph>");*/
+</script>
+</body>
+</html>

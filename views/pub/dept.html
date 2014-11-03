@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="/css/themes/metro-blue/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/css/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/css/themes/default.css">
+    <link rel="stylesheet" href="/css/jquery.jOrgChart.css"/>
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/js/jquery.jOrgChart.js"></script>
+</head>
+
+<body>
+    <div style="margin:20px 0;"></div>
+    <div class="easyui-panel" style="padding:5px">
+        <ul id="tt" class="easyui-tree"
+        data-options="url:'/getdeptinfo',
+        method:'get',
+        animate:true,
+        onContextMenu: function(e,node){      	
+            e.preventDefault();
+            $(this).tree('select',node.target);
+            var n   = node.id.split('-');
+            var len = n.length;
+                if(1 == len){
+                    $('#top').menu('show',{
+                        left: e.pageX,
+                        top:  e.pageY
+                        });
+                }else if(4 == len){
+                        $('#bottom').menu('show',{
+                            left: e.pageX,
+                            top:  e.pageY
+                        });
+                }else{
+                    $('#default').menu('show',{
+                        left: e.pageX,
+                        top:  e.pageY
+                    });
+                }
+},onAfterEdit:function(node){
+	   commitUp(node);
+        }">
+        </ul>
+    </div>
+    
+    
+    <div id="top" class="easyui-menu" style="width:120px;">
+        <div onclick="$('#add').dialog('open')" data-options="iconCls:'icon-add'">添加</div>
+    </div>
+    
+    <div id="bottom" class="easyui-menu" style="width:120px;">
+        <div onclick="$('#del').dialog('open')" data-options="iconCls:'icon-remove'">删除</div>
+        <div onclick="upDept()" data-options="iconCls:'icon-edit'">修改</div>
+    </div>
+    
+    <div id="default" class="easyui-menu" style="width:120px;">
+        <div onclick="$('#add').dialog('open')" data-options="iconCls:'icon-add'">添加</div>
+        <div onclick="$('#del').dialog('open')" data-options="iconCls:'icon-remove'">删除</div>
+        <div onclick="upDept()" data-options="iconCls:'icon-edit'">修改</div>
+    </div>
+    
+
+    <div>
+        <ul id="tree" class="tree" style="width:500px; overflow:visible;"></ul>
+    </div>
+
+
+    <div data-options="region:'center'" class="back">
+        <h1></h1>
+        <ul id="org-tbd" style="display:none" class="org">
+         </ul>
+
+        <div id="chart" class="orgChart"></div>
+    </div>
+
+
+    <div id="add" class="easyui-dialog" title="添加" style="width:280px;height:160px;padding:10px 20px" closed="true" buttons="#add-buttons">
+        <form id="addfm" method="post">
+            <div class="fitem">
+                <label>部门名称:</label>
+                <input name="deptname" class="easyui-textbox" type="text">
+            </div>
+        </form>
+    </div>
+    <div id="add-buttons">
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="addDept()" style="width:90px">保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#add').dialog('close')" style="width:90px">取消</a>
+    </div>
+
+    <div id="del" class="easyui-dialog" title="删除" style="width:280px;height:160px;padding:10px 20px" closed="true" buttons="#del-buttons">
+        <form id="delfm" method="post" novalidate>
+            <div class="message">
+                <label>是否删除该部门？</label>
+            </div>
+        </form>
+    </div>
+    <div id="del-buttons">
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="delDept()" style="width:90px">是</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#del').dialog('close')" style="width:90px">否</a>
+    </div>
+</body>
+
+<script type="text/javascript">
+	
+	  //增加部门
+	  function addDept(){
+	  		var node = $('#tt').tree('getSelected');		
+		
+		//提交添加表单
+			 $('#addfm').form('submit',{
+				url:"/adddeptnode?id=" + node.id,
+				success: function(result){
+                    var result = eval('('+result+')');
+                    if (result.errMsg){
+                        $.messager.show({
+                            title: '错误提示',
+                            msg: result.errMsg
+                        });
+                    } else {
+						$('#addfm').form('clear');
+                        $('#add').dialog('close');        
+                        loadtree(); 
+                    }
+                }
+			});			
+	  }
+	  
+	  function delDept(){
+	      var node = $('#tt').tree('getSelected');
+		  			 $('#delfm').form('submit',{
+				url:"/deldeptnode?id=" + node.id,
+				success: function(result){
+                    var result = eval('('+result+')');
+                    if (result.errMsg){
+                        $.messager.show({
+                            title: '错误提示',
+                            msg: result.errMsg
+                        });
+                    } else {
+                        $('#del').dialog('close');        
+                        loadtree(); 
+                    }
+                }
+			});	
+	  }
+	  
+	  function upDept(){
+		  var node = $('#tt').tree('getSelected');
+          $('#tt').tree('beginEdit', node.target);      
+	  }
+	  
+	  function commitUp(node){
+		 $.ajax({
+			type:"POST",
+			url: "http://localhost:3000/updeptnode?nodeid=" + node.id + "&text=" + node.text,
+			success: function(result){	
+            	var result = eval('('+result+')');
+            		if (result.errMsg){
+                		$.messager.show({
+                    		title: '错误提示',
+                    		msg: result.errMsg
+               			});
+            		} else {       
+                		loadtree(); 
+            		}				
+			},					 
+		});	
+	  }
+	
+	
+	       
+	  
+	  //加载部门树
+	  function loadtree(){
+	  	$('#tt').tree('reload'); 
+		
+	  }
+	  
+	  function initdata(){
+	        
+	  }
+
+      $(document).ready(function() {
+		  
+		  
+
+          var oDept = [{
+              text:"部门列表",
+              children:[
+                  {text:"部门A",
+                      children:[
+                          {text:"子部门A1"},
+                          {text:"子部门A2"},
+                          {text:"子部门A3"}
+                      ]},
+                  {text:"部门B",
+                      children:[
+                          {text:"子部门B1"},
+                          {text:"子部门B2"},
+                          {text:"子部门B3"}
+                      ]}]
+          }];
+
+         for(var i=0;i<oDept.length;i++){
+
+              $('.org').append("<li class='save'>"+oDept[i].text);
+              $('.org>li').append("<ul>");
+
+              for(var j=0;j < oDept[i].children.length;j++){
+
+                  $('.org>li>ul').append("<li>"+oDept[i].children[j].text);
+                  $('.org>li>ul>li:eq('+j+')').append("<ul>");
+
+                  for(var z=0; z<oDept[i].children[j].children.length; z++){
+
+                      $('.org>li>ul>li:eq('+ j +')>ul').append("<li>" + oDept[i].children[j].children[z].text + "</li>");
+                  }
+              }
+          }
+
+          $("#org").jOrgChart({
+              chartElement : '#chart',
+              dragAndDrop  : true
+          });
+      });
+
+      jQuery(document).ready(function() {
+          /* Custom jQuery for the example */
+          $("#show-list").click(function(e){
+              e.preventDefault();
+              $('#list-html').toggle('fast', function(){
+                  if($(this).is(':visible')){
+                      $('#show-list').text('Hide underlying list.');
+                      $(".topbar").fadeTo('fast',0.9);
+                  }else{
+                      $('#show-list').text('Show underlying list.');
+                      $(".topbar").fadeTo('fast',1);
+                  }
+              });
+          });
+          $('#list-html').text($('#org').html());
+          $("#org").bind("DOMSubtreeModified", function() {
+              $('#list-html').text('');
+              $('#list-html').text($('#org').html());
+          });
+      });
+</script>
+
+</html>

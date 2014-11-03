@@ -1,0 +1,460 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="/css/themes/metro-blue/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/css/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/css/themes/demo.css">
+    <link rel="stylesheet" type="text/css" href="/css/fileuploader.css">
+    <link rel="stylesheet" type="text/css" href="/lib/ftitle.css">
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/js/jquery.csv2table.js"></script>
+    <script type="text/javascript" src="/js/datagrid-detailview.js"></script>
+    <script type="text/javascript" src="/js/fileuploader.min.js"></script>
+    
+</head>
+<body>
+    <table id="dg" title="员工列表" class="easyui-datagrid" style="width:100%;height:100%"
+            url="/getemployeeinfo"
+            toolbar="#toolbar" pagination="true"
+            rownumbers="true" fitColumns="true" singleSelect="true"
+            pagination="true" sortName="itemid" sortOrder="desc">
+        <thead>
+            <tr>
+                <th field="name" width="50" align="center">姓名</th>
+				<th field="sex" width="50" align="center">性别</th>
+				<th field="age" width="50" align="center">年龄</th>
+				<th field="phone" width="50" align="center">手机号码</th>
+                <th field="email" width="50" align="center">邮箱地址</th>
+				<th field="dept" width="50" align="center">部门</th>
+				<th field="note" width="50" align="center">备注</th>
+            </tr>
+        </thead>
+        <tbody id="list">
+
+        </tbody>
+    </table>
+    <iframe id="ifr" style="position:absolute;left:-999px;top:-999px;" src="javascript:void(0)"></iframe>
+    <div id="toolbar">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onClick="newUser()">新增</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onClick="editUser()">编辑</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onClick="del()">删除</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-back" plain="true" onClick="inputUser()">导入</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-redo" plain="true" onClick="sureDg()">导出</a>
+    </div>
+
+    <div id="dlg" class="easyui-dialog" style="width:600px;height:600px;padding:10px 20px" closed="true" buttons="#dlg-buttons">
+        <div class="ftitle">员工信息</div>
+            <form id="fm" method="post" novalidate>
+                <div class="fitem"> 
+                    <label>姓名:</label>
+                    <input name="name" class="easyui-textbox" id="name">
+                </div>
+				<div class="fitem">
+                    <label>性别:</label>
+                    <input name="sex" class="easyui-textbox" id="sex">
+                </div>
+				<div class="fitem">
+                    <label>年龄:</label>
+                    <input name="age" class="easyui-textbox" id="age">
+                </div>
+                <div class="fitem">    
+					<table id="conMethod" title="联系方式" class="easyui-datagrid" style="width:100%;height:200px"
+							url=""
+							toolbar="#contactToolbar" pagination="true"
+							rownumbers="true" fitColumns="true" singleSelect="true"
+							pagination="true" sortName="itemid" sortOrder="desc">
+						<thead>
+							<tr>
+								<th field="number" width="100%" align="center">联系电话</th>
+							</tr>
+						</thead>
+					 </table>
+					 <div id="contactToolbar">
+							<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onClick="newContact();">新增</a>
+							<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onClick="delContact();">删除</a>
+					 </div>
+                </div>
+                <div class="fitem">
+                    <label>邮箱地址:</label>
+                    <input name="email" class="easyui-textbox" id="email" style="width:300px; ">
+                </div>
+				<div class="fitem">
+                    
+						 <div style="margin:20px 0">
+						部&nbsp;&nbsp;&nbsp;&nbsp;门:
+							&nbsp;&nbsp;&nbsp;&nbsp;<input id="cc" class="easyui-combotree"  multiple style="width:300px; ">
+						</div>
+						
+				</div>
+				<div class="fitem">
+                    <label>备&nbsp;&nbsp;&nbsp;&nbsp;注:</label>
+                    <input name="note" class="easyui-textbox" id="note" style="height:60px; width:300px;">
+                </div>
+            </form>
+        </div>
+    </div>
+   
+    <div id="sureDlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px" closed="true" buttons="#sureDlg-buttons">
+        <div class="ftitle">导出确认</div>
+        确定导出？
+    </div>
+	
+ 	<div id="addContactDlg" class="easyui-dialog" style="width:300px;height:200px;padding:10px 20px" closed="true" buttons="#addContactDlg-buttons">
+           <div class="ftitle">添加联系方式</div>
+           <form id="fm1">
+                <div class="fitem">
+                    <label>号码:</label>
+                    <input name="context" class="easyui-textbox" id="number">
+                </div>
+           </form>
+           </div>
+    </div>
+    <div id="dlg-buttons">
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"  style="width:90px" onClick="bindUser()">保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onClick="javascript:$('#dlg').dialog('close')" style="width:90px">取消</a>
+    </div>
+
+	<div id="addContactDlg-buttons">
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"  style="width:90px" onClick="saveContact()">保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onClick="javascript:$('#addContactDlg').dialog('close')" style="width:90px">取消</a>
+    </div>
+	
+	<div id="sureDlg-buttons">
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"  style="width:90px" onClick="DownloadJSON2CSV()">导出</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onClick="javascript:$('#sureDlg').dialog('close')" style="width:90px">取消</a>
+    </div>
+   
+    
+    
+    <div id="inputDlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px" closed="true" buttons="#inputDlg-buttons">
+    
+    			<div class="ftitle">上传文件</div>
+				<div id="file-uploader-demo1"></div>
+				 <div class="qq-upload-extra-drop-area">Drop files here too</div>
+            
+            
+            <div class="ftitle">下载标准模板</div>
+            <input onClick="down()" type="button" value="下载标准模板" style="width: 200px;height: 50px;font-size:18px;color:#61c221;"/>
+            <p>下载标准模板之后添加数据而后可导入数据</p>
+ 
+    </div>
+    </div>
+    
+    
+    
+</body>
+</html>
+<script type="text/javascript">
+
+	
+
+	
+	//部门选择操作
+	$('#cc').combotree( {  
+	onlyLeafCheck : true,  
+   	url:'/getdeptinfo',method:'get', 
+    onSelect : function(node) {  
+        var tree = $(this).tree;  
+        var isLeaf = tree('isLeaf', node.target);  
+        if (!isLeaf) {   
+            $('#cc').combotree('clear');  
+        }  
+    }  
+	});  
+
+
+
+	var isReturn = false;
+	//添加员工
+    function newUser() {
+        closeAllDlg();		
+        $('#dlg').dialog('open').dialog('setTitle', '添加新员工');
+        $('#fm').form('clear');
+		$('#conMethod').datagrid('loadData', { total: 0, rows: [] });
+    }
+	
+	/***************************************************************************************/
+	//编辑用户联系方式
+	var cache = new Array(); //缓存当前用户的联系方式
+	
+	//删除一条联系方式
+	function delContact(){
+		var row   = $('#conMethod').datagrid('getSelected');		
+		if(row){
+			 $.messager.confirm('提示','是否确认删除?',function(r){
+			 	//清空cache中的该条数据
+				for(var i = 0; i < cache.length; i++){
+					if(row.number == cache[i].number){
+						cache.splice(i,1);
+						break;
+					}
+				}
+				//reload表格
+				$('#conMethod').datagrid('loadData',cache);
+			 })
+		}else{
+			$.messager.alert("提示","请选择一行");
+		}
+	}
+	
+	//新增一条联系方式
+	function newContact(){
+        $('#addContactDlg').dialog('open').dialog('setTitle', '新增联系信息');
+		$('#fm1').form('clear');
+	}
+	//选择保存
+	function saveContact(){
+		var Context = $('#number').val();
+		var row 	= $('#conMethod').datagrid('getSelected');
+		if(row){
+		
+		}else{//新增数据
+			cache.push({
+			number:Context
+		 });
+		}		 
+      	$('#conMethod').datagrid('loadData',cache);
+        $('#addContactDlg').dialog('close');
+		isReturn = true;
+	}
+
+	 //编辑员工信息
+    function editUser() {
+        closeAllDlg();
+        var row = $('#dg').datagrid('getSelected');
+        if (row) {
+            $('#dlg').dialog('open').dialog('setTitle', '编辑员工');
+            $('#fm').form('load', row);
+			
+			//填充cache
+			
+			
+			//填充combo-tree
+			
+        } else {
+            $.messager.alert("提示","请选择一行");
+        }
+    }
+
+
+/******************************************************************************************/
+//保存用户信息
+
+	function bindUser(){
+		//获取表格信息
+		//为cache
+		
+		//获取部门combo tree 信息\
+		
+		if(isReturn == false){
+			alert('至少填写一个电话号码！')
+			return false;
+		}else if($('#cc').combotree('tree').tree('getChecked')==0){
+				alert('至少选择一个部门！')
+				return false;
+		}else{
+		
+		var t = $('#cc').combotree('tree');
+		var n = t.tree('getChecked');
+		var depts = new Array();		
+		for(var i =0; i < n.length; i++){				
+			depts.push({"id":n[i].id,"text":n[i].text});
+		}
+		
+		$('#fm').form('submit',{
+			url:"/addemployee?depts=" + JSON.stringify(depts)+"&phones=" + JSON.stringify(cache),
+			success: function(result){
+				var result = eval('('+result+')');
+				if (result.errMsg){
+					$.messager.show({
+						title: '错误提示',
+						msg: result.errMsg
+					});
+				} else {
+					//清空缓存
+					cache = [];
+					
+					$('#dlg').dialog('close');       
+					$('#dg').datagrid('reload'); 
+				}
+			}
+		});		
+	}	
+	isReturn = false;
+	}
+/************************************************************************************/
+//获取个人详细数据
+    $(function(){
+        $('#dg').datagrid({
+            view: detailview,
+            detailFormatter:function(index,row){
+                return '<div style="padding:2px"><table id="ddv-' + index + '"></table></div>';;
+            },
+            onExpandRow: function(index,row){
+				
+				$('#ddv-'+index).datagrid({
+					url:'/getemployeedetail?name='+row.name + '&phone=' + row.phone,
+					fitColumns:true,
+					singleSelect:true, 
+					height:'auto', 
+					columns:[[  
+                        {field:'type',title:'分类',width:50},  
+                        {field:'details',title:'详细信息',width:200}]],
+					onLoad:function(){	
+                        $('#dg').datagrid('fixDetailRowHeight',index);
+                    }
+					
+				});
+				
+                $('#dg').datagrid('fixDetailRowHeight',index);
+            }
+        });
+    });
+
+	//删除一条数据
+    function del() {
+        var row = $('#dg').datagrid('getSelected');
+        var index = $('#dg').datagrid('getRowIndex', row);
+        if (row != null) {
+			$.messager.confirm('提示','是否确认删除?',function(r){				
+				if(r){
+					    $.post('/delemployee',{name:row.name,phone:row.phone},function(result){
+                        $('#dg').datagrid('reload'); 
+                        },'json');
+				}
+			})
+             $('#dg').datagrid('deleteRow', index);
+
+        }
+        else {
+            $.messager.alert("提示","请选择一行");
+        }
+    }
+	
+		//导出操作
+    function DownloadJSON2CSV() {
+		$.ajax({
+			type:"get",
+			url: "http://localhost:3000/exportdata",
+			success: function(data){
+				alert(data);
+				
+        		var titStr = '';
+				var titStr = '姓名，性别，年龄，联系方式，邮件地址，部门，备注';
+				titStr     += '\r\n'
+				
+				for(var i = 0; i < data.length; i++){
+					titStr += data[i].name + ',';
+					titStr += data[i].sex + ',';
+					titStr += data[i].age + ',';
+					titStr += data[i].phone + ',';
+					titStr += data[i].email + ',';
+					titStr += data[i].depart + ',';
+					titStr += data[i].note + '\r\n';	
+				}
+				
+				alert(titStr);
+				
+        		window.open("data:text/csv;charset=utf-8," + escape(titStr))
+       			 $('#sureDlg').dialog('close');	
+			},					 
+		});
+    }
+	
+	function uploadFile(){
+		$('#uploadForm').form('submit',{
+			url:'http://localhost:3000/importdata',
+			success:function(result){
+				
+			}
+			
+		})	
+	}
+	
+    //下载模板
+    function down() {
+        window.location.href = 'text.csv';
+    }
+
+    //编辑员工信息
+    function editUser() {
+        closeAllDlg();
+        var row = $('#dg').datagrid('getSelected');
+        if (row) {
+             $('#dlg').dialog('open').dialog('setTitle', '编辑员工');
+            $('#fm').form('load', row);
+        } else {
+            alert('请选择一行')
+        }
+    }
+
+    //编辑后保存员工信息
+    function editSaveUser() {
+        var row = $('#dg').datagrid('getSelected');
+        var index = $('#dg').datagrid('getRowIndex', row);
+        $('#dg').datagrid('deleteRow', index);
+        var userId = $('#editId').val();
+        var userName = $('#editName').val();
+		var userSex = $('#editSex').val();
+		var userAge = $('#editAge').val();
+		var userEmail = $('#editEmail').val();
+		var userDepart = $('#cc').val();
+        var userMessage = $('#editMessage').val();
+        user.push({
+            id:userId,
+            firstname:userName,
+			sex:userSex,
+			age:userAge,
+            email:userEmail,
+			depart:userDepart,
+			message:userMessage
+        });
+        $('#dg').datagrid('loadData',user);
+        $('#editDlg').dialog('close');
+
+    }
+
+
+    //关闭所有弹窗
+
+    function closeAllDlg() {
+        $('#dlg').dialog('close');
+        $('#inputDlg').dialog('close');
+        $('#editdlg').dialog('close');
+    }
+
+    //导入数据
+
+    function inputUser() {
+        closeAllDlg();
+		
+		var uploader = new qq.FileUploader({
+			element: document.getElementById('file-uploader-demo1'),
+			action: 'upload',
+			debug: true,
+			extraDropzones: [qq.getByClass(document, 'qq-upload-extra-drop-area')[0]]
+		});   
+		
+        $('#inputDlg').dialog('open').dialog('setTitle', '导入指南');
+    }
+
+    //导出数据
+
+    function saveCsv(dg) {
+        $('#sureDlg').dialog('close');
+        $('#dg').table2CSV();
+    }
+
+
+    //导出提示
+
+    function sureDg() {
+        $('#sureDlg').dialog('open').dialog('setTitle', '导出提示');
+    }
+	
+	
+
+</script>

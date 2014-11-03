@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="/css/themes/metro-blue/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/css/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/css/themes/default.css">
+    <link rel="stylesheet" type="text/css" href="/lib/ftitle.css">
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/easyui-lang-zh_CN.js"></script>
+
+ <script type="text/javascript">
+ 	    var url;
+ 	    
+		function newUser(){
+            $('#dlg').dialog('open').dialog('setTitle','新增用户');
+            $('#fm').form('clear');
+            url = '/addadminuser';
+            }
+		
+        function editUser(){
+            var row = $('#dg').datagrid('getSelected');
+            if (row){
+                $('#dlg').dialog('open').dialog('setTitle','编辑');
+                $('#fm').form('load',row);               
+                url = "/updateadminuser";
+            }
+        }
+		
+		function destroyUser(){
+            var row = $('#dg').datagrid('getSelected');
+            if (row){
+                $.messager.confirm('提示','是否确认删除?',function(r){
+                    if (r){
+                        $.post('/deladminuser',{username:row.username},function(result){
+                        
+                        $('#dg').datagrid('reload'); 
+                        },'json');
+                    }
+                });
+            }
+        }
+        
+        function saveUser(){
+            $('#fm').form('submit',{
+                url: url,
+                success: function(result){
+                    var result = eval('('+result+')');
+                    if (result.errMsg){
+                        $.messager.show({
+                            title: '错误提示',
+                            msg: result.errMsg
+                        });
+                    } else {
+                        $('#dlg').dialog('close');        
+                        $('#dg').datagrid('reload');    
+                    }
+                }
+            });
+        }
+        	
+	  function cleardata(){
+     	$('#fm').form('clear');
+      }
+ 
+ </script>
+
+</head>
+<body> 
+    <table id="dg" title="管理员列表" class="easyui-datagrid" style="width:700px;height:450px"
+            url="/getadminuser"
+            toolbar="#toolbar" pagination="true"
+            rownumbers="true" fitColumns="true" singleSelect="true">
+        <thead>
+            <tr>
+                <th field="username" width="50" align="center">用户名</th>            
+                <th field="password" width="50" align="center">密码</th>
+                <th field="note" width="150" align="center">备注</th>
+            </tr>
+        </thead>
+    </table>
+    <div id="toolbar">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newUser()">新增</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editUser()">编辑</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyUser()">删除</a>
+    </div>
+    
+
+
+ <div id="dlg" class="easyui-dialog" style="width:450px;height:300px;padding:10px 20px"
+            closed="true" buttons="#dlg-buttons">
+            
+    		<div class="easyui-panel" style="padding:5px;">
+      	<form id="fm" method="post" novalidate>
+      		
+      		<div class="fitem">
+			<label>用户名:</label>
+			<input class="easyui-textbox" type="text" name="username" required>
+			</div>
+     
+            <div class="fitem">
+			<label>密码:</label>
+			<input class="easyui-textbox" type="text" id="password" name = "password"required>	
+			</div>          
+            <div class="fitem">
+			<label>备注:</label>
+			<input class="easyui-textbox" type="text" id = "note" name="note" style="height:70px">
+			</div>
+
+            <div class="ftitle"></div>
+        </form>
+                        
+        <div id = dlg-buttons">
+<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick ="saveUser()" style="width:120px">保存</a>
+<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-back'" onclick = "cleardata()" style="width:120px;float:right">重置</a>
+        </div>           
+                        
+            </div>            
+ </div>
+
+
+
+</body>
+</html>

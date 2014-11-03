@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1" charset="UTF-8">
+  <meta http-equiv="Access-Control-Allow-Origin" content="*">
+  <link rel="stylesheet" type="text/css" href="css/jquery.mobile.flatui.css" />
+	<script type="text/javascript" src="/js/flat-ui.min.js"></script>
+  <script type="text/javascript" src="/js/jquery-1.6.4.js"></script>
+  <script type="text/javascript" src="/js/phonegap-1.0.0.js"></script>
+  <script type="text/javascript" src="/js/jquery.js"></script>
+  <script type="text/javascript" src="/js/jquery.mobile-1.0.min.js"></script>
+  <script type="text/javascript" src="/js/jquery.mobile-1.4.0-rc.1.js"></script>
+  
+  <style type="text/css">
+    #home {background:#5DADE2}
+  	#logo {
+  		width:auto;
+		height:auto;
+		position:absolute;
+		left:25%;
+		top:30%;
+  		padding: 10px 10px 10px;
+  		background-color: #edeff1;
+  		border-radius: 6px;
+		-webkit-box-shadow: 6px 6px 6px #888888;
+  }
+  
+    	#title {
+  		width:100%;
+		height:30px;
+		position:absolute;
+		bottom:0;
+		text-align:center;
+		background:#5DADE2
+  		padding: 0px 0px 0px;
+  		border-radius: 6px;
+  }
+  </style>
+</head>
+<body>
+<div data-role = "page" id= "home">
+	<div id = "logo" style = "text-align:center;">	
+		<img src="images/th_Apps.png">
+        <span><h2 style="color:#5DADE2">MHT.Cloud OA</h1></span>
+    </div>
+</div>
+  <script type="text/javascript">
+$(document).on("pageinit","#home",function(){
+  $("div").on("swipeleft",function(){
+	//$.mobile.changePage("./login.html", {transition: "slide", reverse:true},false);
+	//$.mobile.changePage( "login.html","slideup");  
+	$.mobile.changePage("/mblogin", "slideup");
+	//$.mobile.changePage("http://www.baidu.com","slideup");
+	  //document.location.href = "http://192.168.0.101:3000/mb_server/views/login.html";
+	  // document.location.href = "http://www.baidu.com";
+	// window.location.href="./login.html";
+	// window.location.href="http://www.baidu.com";
+	
+});
+});
+  </script>
+ 
+  
+</body>
+</html>

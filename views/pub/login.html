@@ -1,0 +1,340 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="/css/themes/metro-blue/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/css/themes/default.css">
+	<link rel="stylesheet" type="text/css" href="/css/themes/icon.css"> 
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/easyui-lang-zh_CN.js"></script>
+    <script tppe="text/javascript" src="/lib/center.js"></script>
+
+<script type="text/javascript">
+
+       function login(){
+        	var username = $('#username').val();
+        	var password = $('#password').val();
+        	        			
+    		$('#ff').form('submit',{
+    		    		url:"publogin?username=" + username + "&password=" + password,
+		
+    		success:function(data){
+    				var obj = jQuery.parseJSON(data);
+    				    				
+    				if("failed" == obj.result){
+						$.messager.alert('提示',obj.errMsg);
+    				}else{
+    					location='http://localhost:3000/index';
+    				}
+    			}       	
+    		});
+    	}
+
+    function cleardata(){
+        $('#ff').form('clear');
+    }
+
+    function newUser(){
+        $('#dlg').dialog('open').dialog('setTitle','欢迎注册云OA');
+        $('#ff').form('clear');
+    }
+
+    $(document).ready(function(){
+        $.extend($.fn.validatebox.defaults.rules, {
+
+            /*必须和某个字段相等*/
+            equalTo: {
+                validator: function (value, param) {
+                    return $(param[0]).val() == value; }, message: '字段不匹配' }
+        });
+    });
+
+    function register(){
+        $('#regfm').form('submit',{
+            url:'/register',
+            success: function(result){
+                if(result.errMsg){
+                    $.messager.alert('提示',result.errMsg);
+                }else{
+                    location='http://localhost:3000/';
+                }
+            }
+        });
+    }
+
+    //验证码生成
+
+    var code ; //在全局 定义验证码
+    function createCode(){
+
+        code = new Array();
+        var codeLength = 4;//验证码的长度
+        var checkCode = document.getElementById("checkCode");
+        checkCode.value = "";
+
+        var selectChar = new Array(2,3,4,5,6,7,8,9,'A','B','C','D','E','F','G','H','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z');
+
+        for(var i=0;i<codeLength;i++) {
+            var charIndex = Math.floor(Math.random()*32);
+            code +=selectChar[charIndex];
+        }
+        if(code.length != codeLength){
+            createCode();
+        }
+        checkCode.value = code;
+    }
+
+    //验证码确认
+
+    function check()
+    {
+        var inputCode = document.getElementById("input1").value.toUpperCase();
+        if(inputCode.length <=0) {
+            $('.error').text("请输入验证码！");
+            return false;
+        }
+        else if(inputCode != code ){
+            $('.error').text("验证码输入错误！");
+            createCode();
+            return false;
+        }
+        else {
+            $('.error').text("验证码输入正确！");
+            $('.error').css('color','green');
+        }
+    }
+
+    //企业id确认
+
+    function checkPhone(){
+        var reg = /^1[3,5,8]\d{9}$/;
+        var telNum = $('#phone').val();
+        var phone = $('#phone');
+        if(reg.test(telNum)){
+            phone.next().css("background-image","url(images/yes.png)");
+        }else{
+            phone.next().css("background-image","url(images/no.png)");
+
+        }
+    }
+
+    //首次密码确认
+
+    function checkFirstPwd(){
+        var firPwd = $('#firstpw').val().length;
+        if(firPwd.length <=0) {
+            $('#firstpw').next().text("请输入密码！");
+            return false;
+        }
+        else if(firPwd <6 || firPwd >32){
+            $('#firstpw').next().css("background-image","url(images/no.png)");
+            return false;
+        }
+        else {
+            $('#firstpw').next().css("background-image","url(images/yes.png)");
+        }
+    }
+
+    //两次密码确认
+
+    function checkSecondPwd(){
+        var firPwd = $('#firstpw').val()
+        var secondPwd = $('#secondpw').val();
+        if(firPwd == secondPwd && firPwd.length!=0) {
+            $('#secondpw').next().next().text('');
+            $('#secondpw').next().css({"background-image":"url(images/yes.png)","background-repeat":"no-repeat"});
+
+        }
+        else if(firPwd.length==0){
+            $('#secondpw').next().next().text("密码不能为空！");
+            $('#secondpw').next().next().css('color','red');
+        }
+        else {
+            $('#firstpw').next().css("background-image","none");
+            $('#secondpw').next().css("background-image","none");
+            $('#secondpw').next().next().text("两次密码不一致！");
+            $('#secondpw').next().next().css('color','red');
+
+        }
+    }
+    function allCheck(){
+        check();
+        checkPhone();
+        checkSecondPwd();
+        checkFirstPwd();
+    }
+
+
+</script>
+
+<style type="text/css">
+    body{
+        font-size: 12px;
+    }
+    #fm{
+        margin:0;
+        padding:10px 30px;
+    }
+    .ftitle{
+        font-size:14px;
+        font-weight:bold;
+        padding:5px 0;
+        margin-bottom:10px;
+        border-bottom:1px solid #ccc;
+    }
+    .fitem{
+        margin-bottom:5px;
+    }
+    .fitem label{
+        display:inline-block;
+        width:80px;
+    }
+    .fitem input{
+        width:160px;
+    }
+    .code{
+        font-family:Arial,'宋体';
+        font-style:italic;
+        color:green;
+        border:0;
+        padding:2px 3px;
+        letter-spacing:3px;
+        font-weight:bolder;
+    }
+    .unchanged {
+        border:0;
+    }
+    #input1{
+        width: 80px;;
+    }
+    .error{
+        margin-left: 85px;
+        color:red;
+    }
+    #change{
+        color:blue;
+    }
+    #change:hover{
+        color:red;
+    }
+    .firstShow{
+        color:red;
+        display:inline-block;
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+    }
+    .idShow{
+        display:inline-block;
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+    }
+    .secondShow{
+        display:inline-block;
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+    }
+    .showWord{
+        display:block;
+        width: 100px;
+        height: 20px;
+        line-height: 20px;
+        margin-left: 85px;;
+    }
+    input{
+        height: 20px;;
+        line-height: 20px;
+        margin-bottom: 5px;
+    }
+</style>
+
+
+</head>
+
+
+
+<body onLoad="createCode()">
+<div id = "logincircle" style="position:absolute;top:30%;left:35%">
+       <!-- 老用户登陆div-->
+    <div class="easyui-panel" title="登&nbsp;&nbsp;&nbsp陆" style="width:400px;height:200px;padding:10px;">
+        <div style="padding:10px 60px 20px 60px">
+            <form id="ff" method="post">
+                <table width="280" border="0" cellpadding="5" cellspacing="0">
+                    <tr>
+                        <td>用户名:</td>
+                        <td><input class="easyui-textbox" type="text" id = "username" name="username"></input></td>
+                    </tr>
+                    <tr>
+                        <td>密&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp码:</td>
+                        <td><input class="easyui-textbox" type="password" id = "password" name="password"></input></td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                    </tr>
+                </table>
+            </form>
+            <div style="text-align:right;padding-right:25px"><a class="easyui-linkbutton" iconCls="icon-ok" href="javascript:void(0)" onclick="login()">登录</a>
+
+                <a class="easyui-linkbutton" iconCls="icon-cancel" href="javascript:void(0)" onclick="cleardata()">重置</a>
+
+                <a class="easyui-linkbutton" iconCls="icon-add" href="javascript:void(0)" onclick="newUser()">注册</a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 注册新用户-->
+
+    <div id="dlg" class="easyui-dialog" style="width:400px;padding:10px 20px;height: 500px;" closed="true" buttons="#dlg-buttons">
+
+        <form id="regfm" method="post" novalidate>
+            <div class="ftitle">基本信息（必选）</div>
+
+            <div class="fitem" align="center">
+                <span style="color: #606060;font-size: 12px">企业ID为手机号</span>
+            </div>
+
+            <div class="fitem">
+                <label>企业ID:</label>
+                <input type="text" name="ID" id="phone" onblur="allCheck()">&nbsp;&nbsp;&nbsp;<em class="idShow"></em>
+            </div>
+            <div class="fitem" align="center">
+                <span style="color: #606060;font-size: 12px">密码长必须度介于6到32之间</span>
+            </div>
+
+            <div class="fitem">
+                <label>密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:</label>
+                <input id="firstpw" name="firstpw"  type="password" value="" onblur="allCheck()"/>&nbsp;&nbsp;&nbsp;<em class="firstShow"></em>
+            </div>
+            <div class="fitem">
+                <label>密码确认:</label>
+                <input type="password" name="secondpw" id="secondpw" onblur="allCheck()"/>&nbsp;&nbsp;&nbsp;<em class="secondShow"></em><em class="showWord"></em>
+            </div>
+            <label>验&nbsp;&nbsp;证&nbsp;&nbsp;码:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="text" id="input1" class="easyui-validatebox" onblur="allCheck()" />
+            <input type="button" id="checkCode" class="code" style="width:60px; background-image:url(images/111.jpg)" onClick="createCode()" /> <a href="#" onClick="createCode()" id="change">看不清楚</a><br />
+            <span class="error">请输入验证码！</span>
+            <div class="ftitle">附加信息（可选）</div>
+            <div class="fitem">
+                <label>企业名称:</label>
+                <input name="entername" class="easyui-textbox">
+            </div>
+            <div class="ftitle"></div>
+            <div>
+                <input id="agree" name="agree" checked="checked" title="是否同意服务条款" type="checkbox"><p style="margin-top: -5px;">我已阅读并接受《<a href="#" target="_blank" style="color:#0099ff">服务条款</a>》</p>
+            </div>
+        </form>
+    </div>
+
+    <div id="dlg-buttons">
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" onclick="register()" style="width:90px" data-options="iconCls:'icon-man'">立即注册</a>
+    </div>
+
+
+</div>
+
+</body>
+</html>

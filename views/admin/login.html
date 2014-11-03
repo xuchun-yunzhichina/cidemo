@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="/css/themes/metro-blue/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/css/themes/default.css">
+	<link rel="stylesheet" type="text/css" href="/css/themes/icon.css"> 
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/easyui-lang-zh_CN.js"></script>
+    <script tppe="text/javascript" src="/lib/center.js"></script>
+    
+    <script type="text/javascript">
+	
+		$(function(){
+			$(".center").center();});
+			
+		function cleardata(){
+			$('#ff').form('clear');
+		};
+    
+        function login(){
+        	var inputnm = $('#username').val();
+        	var inputpw = $('#password').val();
+        	        			
+    		$('#ff').form('submit',{
+    		    		url:"loginaction?username=" + inputnm + "&password=" + inputpw,
+		
+    		success:function(data){
+    				var obj = jQuery.parseJSON(data);
+    				    				
+    				if("failed" == obj.result){
+						$.messager.alert('提示',obj.errMsg);
+    				}else{
+    					location='http://localhost:3000/adminindex';
+    				}
+    			}       	
+    		});
+    	}
+ 
+</script>  
+</head>
+
+
+
+<body>
+	<div class = "center">
+        <div class="easyui-panel" title="用户登陆" style="width:320px;height:200px;padding:10px;text-align:center">
+        <form id="ff" method="post">
+            <table width="240" border="0" cellpadding="5" cellspacing="0">
+                <tr>
+                    <td>用户名:</td>
+                    <td><input class="easyui-textbox" type="text" id = "username"" ></input></td>
+                </tr>
+                <tr>
+                    <td>密码：</td>
+                    <td><input class="easyui-textbox" type="password" id = "password"></input></td>
+                </tr>
+                <tr>
+                </tr>
+            </table>
+        </form>
+     <div style="padding:15px 0;">   
+        <a class="easyui-linkbutton" href="javascript:void(0)" iconCls="icon-ok" onclick="login()" style="width:80px">登陆</a>          
+        <a class="easyui-linkbutton" href="javascript:void(0)" iconCls="icon-cancel" onclick="cleardata()" style="width:80px">重置</a>
+     </div>                      
+        
+    </div>
+    
+    
+    </div>
+	
+</body>
+</html>

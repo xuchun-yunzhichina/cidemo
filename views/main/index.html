@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="author" content="……" />
+    <meta http-equiv="copyright" content="……">
+    <meta http-equiv="description" content="……" />
+    <meta http-equiv="keywords" content="……" />
+    <script type="text/javascript"src="js/move.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+    <link href="css/common.css" rel="stylesheet" type="text/css" />
+</head>
+<script type="text/javascript">
+
+		function Login(){
+			var username = $('#username').val();
+        	var password = $('#password').val();
+			      			
+    		$('#login_form').form('submit',{
+    		    		url:"/publogin",
+    		success:function(data){
+    				var obj = jQuery.parseJSON(data);
+		
+    				if("failed" == obj.result){
+						alert(obj.errMsg);
+    				}else{
+    					location='http://localhost:3000/index';
+    				}
+    			},
+			timeout: 5000,
+        	error: function() {
+        	}      	
+    		});
+	}
+
+	
+   //注册
+    function cleardata(){
+        $('#ff').form('clear');
+    }
+
+    function newUser(){
+        $('#dlg').dialog('open').dialog('setTitle','欢迎注册云OA');
+        $('#ff').form('clear');
+    }
+
+	 $(document).ready(function(){
+        $.extend($.fn.validatebox.defaults.rules, {
+
+            /*必须和某个字段相等*/
+            equalTo: {
+                validator: function (value, param) {
+                    return $(param[0]).val() == value; }, message: '字段不匹配' }
+        });
+    });
+	
+
+	
+	
+    function register(){
+	
+		var phone = $('#phone');
+		var reg = /^1[3,5,8]\d{9}$/;
+        var telNum = $('#phone').val();
+	    var firPwd = $('#firstpw').val().length;
+		if(reg.test(telNum)  &&  $('#secondpw').next().next().text()==0 && firPwd >=6 && firPwd <=32 &&$('.error').text() == '验证码输入正确！'){
+			$('#regfm_form').form('submit',{
+						
+				url:'/register',
+				success: function(result){
+					var obj = jQuery.parseJSON(result);
+					if("failed" == obj.result){
+						
+						alert(result.errMsg);
+	 
+					}else{
+						location='http://localhost:3000/index';
+					}
+				}
+			});
+		}
+		
+    }
+
+    //验证码生成
+
+    var code ; //在全局 定义验证码
+    function createCode(){
+
+        code = new Array();
+        var codeLength = 4;//验证码的长度
+        var checkCode = document.getElementById("checkCode");
+        checkCode.value = "";
+
+        var selectChar = new Array(2,3,4,5,6,7,8,9,'A','B','C','D','E','F','G','H','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z');
+
+        for(var i=0;i<codeLength;i++) {
+            var charIndex = Math.floor(Math.random()*32);
+            code +=selectChar[charIndex];
+        }
+        if(code.length != codeLength){
+            createCode();
+        }
+        checkCode.value = code;
+    }
+
+    //验证码确认
+
+    function check()
+    {
+        var inputCode = document.getElementById("input1").value.toUpperCase();
+        if(inputCode.length <=0) {
+            $('.error').text("请输入验证码！");
+            return false;
+        }
+        else if(inputCode != code ){
+            $('.error').text("验证码输入错误！");
+            createCode();
+            return false;
+        }
+        else {
+            $('.error').text("验证码输入正确！");
+            $('.error').css('color','green');
+        }
+    }
+
+    //企业id确认
+
+    function checkPhone(){
+        var reg = /^1[3,5,8]\d{9}$/;
+        var telNum = $('#phone').val();
+        var phone = $('#phone');
+        if(reg.test(telNum)){
+            phone.next().css("background-image","url(images/yes.png)");
+        }else{
+            phone.next().css("background-image","url(images/no.png)");
+
+        }
+    }
+
+    //首次密码确认
+
+    function checkFirstPwd(){
+        var firPwd = $('#firstpw').val().length;
+        if(firPwd.length <=0) {
+            $('#firstpw').next().text("请输入密码！");
+            return false;
+        }
+        else if(firPwd <6 || firPwd >32){
+            $('#firstpw').next().css("background-image","url(images/no.png)");
+            return false;
+        }
+        else {
+            $('#firstpw').next().css("background-image","url(images/yes.png)");
+        }
+    }
+
+    //两次密码确认
+
+    function checkSecondPwd(){
+        var firPwd = $('#firstpw').val()
+        var secondPwd = $('#secondpw').val();
+        if(firPwd == secondPwd && firPwd.length!=0) {
+            $('#secondpw').next().next().text('');
+            $('#secondpw').next().css({"background-image":"url(images/yes.png)","background-repeat":"no-repeat"});
+
+        }
+        else if(firPwd.length==0){
+            $('#secondpw').next().next().text("密码不能为空！");
+            $('#secondpw').next().next().css('color','red');
+        }
+        else {
+            $('#firstpw').next().css("background-image","none");
+            $('#secondpw').next().css("background-image","none");
+            $('#secondpw').next().next().text("两次密码不一致！");
+            $('#secondpw').next().next().css('color','red');
+
+        }
+    }
+    function allCheck(){
+        check();
+        checkPhone();
+        checkSecondPwd();
+        checkFirstPwd();
+    }
+
+</script> 
+<body>
+    <!-- header_fixed -->
+    <div class="header_mod">
+        <div id="iheader_mod" class="clear_float">
+            <div class="header_logo"><a href="##" title="……">……</a></div>
+            <ul class="header_nav">
+                <li><a href="##" class="header_link">功能</a></li>
+                <li><a href="##" class="header_link">产品</a></li>
+                <li><a href="##" class="header_link">服务</a></li>  
+            </ul>
+            <div class="header_login">
+                <span>卓越、非凡、简约</span>
+                <a href="##" class="btn btn_general" id="Login">登 录</a>
+                <a href="##" class="btn" id="Register">注 册</a>
+            </div>
+
+        </div>
+    </div>
+    <!-- section_a -->
+	<div class="section_a">
+        <div id="isection_a" class="clear_float">  
+            <div class="slogan">
+                <img src="images/slogan.png" alt="……">
+            </div>
+            <div class="register">
+                <h4>免费的云工作……</h4>
+                <form action="##" method="post" class="clear_float">
+                    <input type="text" id="email" name="account" value="电子邮件或手机号码" focusmsg="电子邮件或手机号码"/>
+                    <button type="submit" class="btn_general btn_register">注 册</button>
+                </form>
+                <p>请使用有效电子邮件地址进行注册</p>
+            </div>
+            <div class="know"><a href="##" id="more_dowm"></a>了解更多</div>
+        </div>
+    </div>
+    <!-- section_b -->
+	<div class="section_b">
+        <div id="isection_b" class="clear_float">
+            <h3>我们的功能</h3>
+            <div class="function">
+                <a href="##">
+                    <span class="canvas"><img src="images/canvas1.png" alt=""></span>
+                    <h5>沟通</h5>
+                </a><a href="##">
+                    <span class="canvas"><img src="images/canvas2.png" alt=""></span>
+                    <h5>知识</h5>
+                </a><a href="##">
+                    <span class="canvas"><img src="images/canvas3.png" alt=""></span>
+                    <h5>任务</h5>
+                </a><a href="##">
+                    <span class="canvas"><img src="images/canvas4.png" alt=""></span>
+                    <h5>扩展</h5>
+                </a>
+                <ul>
+                    <li>
+                        <dl>
+                            <dt>未来的沟通</dt>
+                            <dd>我对未来理想的沟通的理解是，我们能对任何信息能以最方便的方式输入输出，最符合行为本身动机的形态，以最合适的信息框架去传递。
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>我们能做的</dt>
+                            <dd>没人会为了体验打字的乐趣去使用文字聊天，在触摸屏上打字聊天，简直是噩梦，只是我们没有选择。我们每天在电脑面前，我们却要捧着手机去打字回短信，这个实在是个非常糟糕的体验。另一方面手机的使用情境的复杂，会产生很多不方便听，不方便看，不方便打字，不方便说话的不确定性，如何简化输入输出的方式，如果多元化的我们的输入输出，甚至或者图形话，用更符合现实的还原方式去替代我们本来打的文字，这些事我们都可以做。
+                            </dd>
+                        </dl>
+                    </li>
+                    <li>
+                        <dl>
+                            <dt>知识</dt>
+                            <dd>知识，是指人类在实践中认识客观世界（包括人类自身）的成果。它可能包括事实、信息，描述或在教育和实践中获得的技能。它可能是关于理论的，也可能是关于实践的。在哲学中，关于知识的研究叫做认识论。知识的获取涉及到许多复杂的过程：感觉、交流、推理。知识也可以看成构成人类智慧的最根本的因素。</dd>
+                        </dl>
+                        <dl>
+                            <dt>知识</dt>
+                            <dd>知识，是指人类在实践中认识客观世界（包括人类自身）的成果。它可能包括事实、信息，描述或在教育和实践中获得的技能。它可能是关于理论的，也可能是关于实践的。在哲学中，关于知识的研究叫做认识论。知识的获取涉及到许多复杂的过程：感觉、交流、推理。知识也可以看成构成人类智慧的最根本的因素。</dd>
+                        </dl>
+                    </li>
+                    <li>
+                        <dl>
+                            <dt>规定企业任务必须明确的问题</dt>
+                            <dd>（1）本企业是干什么的</dd>
+                            <dd>（2）谁是企业的现实顾客</dd>
+                            <dd>（3）顾客还需要是什么</dd>
+                            <dd>（4）顾客期望得到什么</dd>
+                            <dd>（5）本企业潜在顾客的主要特征是什么</dd>
+                        </dl>
+                    </li>
+                    <li>
+                        <dl>
+                            <dt>扩展功能</dt>
+                            <dd>让信息传递随时随地</dd>
+                            <dd>可靠的安全保障</dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- section_c -->
+	<div class="section_c">
+        <div id="isection_c" class="clear_float">
+            <h3>我们的应用</h3>
+            <div class="app" id="tab">
+                <div class="app_show" style="display:block;">                 
+                    <img src="images/app_pic.jpg" alt="">
+                    <p class="app_content">
+                        耘智造app。软件安装实时检测,联网行为实时监控,安全扫描,联网云查杀恶意软件。绿色、安全、免费、好用。
+                    </p>
+                </div>
+                <div class="app_show">                 
+                    <img src="images/app_start.jpg" alt="">
+                    <p class="app_content">
+                        耘智造app的首页
+                    </p>
+                </div>
+                <div class="app_show">                 
+                    <img src="images/app_login.jpg" alt="">
+                    <p class="app_content">
+                        耘智造app的登陆界面
+                    </p>
+                </div>
+                <div class="app_show">                 
+                    <img src="images/app_address.jpg" alt="">
+                    <p class="app_content">
+                        耘智造app的通讯录
+                    </p>
+                </div>
+                <ul class="app_tab">
+                    <li class="active"><h5>APP应用</h5>耘智造app</li><li><h5>首页</h5>首页首页首页</li><li><h5>登陆界面</h5>登陆登陆登陆</li><li><h5>通讯录</h5>通讯录通讯录</li>
+                </ul>
+            </div>
+            <div class="download">
+                下载
+                <span>
+                    <a href="##"><img src="images/android.jpg" alt=""></a>
+                    <a href="##"><img src="images/ios.jpg" alt=""></a>
+                </span>
+            </div>
+        </div>
+	</div>
+    <!-- footer -->
+    <div class="footer">
+        <div id="ifooter" class="clear_float">
+            <div class="footer_left clear_float">
+                <ul>
+                    <li><h5>关于我们</h5></li>
+                    <li><a href="##">联系我们</a></li>
+                    <li><a href="##">使用条款</a></li>
+                    <li><a href="##">登录</a></li>
+                    <li><a href="##">注册</a></li>
+                </ul>
+                <ul>
+                    <li><h5>购买方案</h5></li>
+                    <li><a href="##">价格体系</a></li>
+                    <li><a href="##">优惠活动</a></li>
+                    <li><a href="##">更多...</a></li>
+                </ul>
+                <ul>
+                    <li><h5>功能价值</h5></li>
+                    <li><a href="##">工作日报</a></li>
+                    <li><a href="##">客户及联系人</a></li>
+                    <li><a href="##">更多...</a></li>
+                </ul>
+                <ul>
+                    <li><h5>客户案例</h5></li>
+                    <li><a href="##">代表客户</a></li>
+                    <li><a href="##">更多案例</a></li>
+                </ul>
+            </div>
+            <div class="footer_right">
+                <div><span>电话：</span>……</div>
+                <div><span>邮箱：</span><a href="##">……</a></div>
+                <div class="contact">
+                    <a href="##"><img src="images/wxico.jpg" alt=""></a>
+                    <a href="##"><img src="images/wxico.jpg" alt=""></a>
+                    <a href="##"><img src="images/wxico.jpg" alt=""></a>
+                </div>
+            </div>                
+        </div>
+    </div>
+    <!-- modal_dialogue_box -->
+    <div id="mask"></div>
+    <div id="Login_box">
+    	<a href="javascript:;" id="Login_close">×</a>
+    	<div class="box_title">请登录OA云</div>        
+        <form method="post" id="login_form">
+            <div><label>用户名：</label><input type="text" value="请输入用户名" name="username" style="width:120px;" id="username"/></div>
+            <div><label>密　码：</label><input type="password" name="password" value="" style="width:120px;" id="password"/></div>
+            <div class="forget"><a href="##">忘记密码？</a> | <a href="##" id="IwantToo">我要注册！</a></div>
+            <a href="javascript:void(0)" class="submit_btn" onClick="Login()" data-options="iconCls:'icon-man'">登陆</a>
+        </form>
+    </div> 
+    <div id="Register_box">
+        <a href="javascript:;" id="Register_close">×</a>
+        <div class="box_title">请注册OA云</div>   
+        
+        
+        <!--注册-->
+        <form id="regfm_form" method="post" novalidate>
+            <div class="ftitle">基本信息（必选）</div>
+            <div class="fitem" align="center">
+                <span style="color:#999;font-size:12px">企业ID为手机号</span>
+            </div>
+            <div class="fitem">
+                <label>企业ID:</label>
+                <input type="text" name="ID" id="phone" onBlur="allCheck()">&nbsp;<em class="idShow"></em>
+            </div>
+            <div class="fitem" align="center">
+                <span style="color:#999;font-size:12px">密码长必须度介于6到32之间</span>
+            </div>
+            <div class="fitem">
+                <label>密码:</label>
+                <input id="firstpw" name="firstpw" type="password" value="" onBlur="allCheck()"/>&nbsp;<em class="firstShow"></em>
+            </div>
+            <div class="fitem">
+                <label>密码确认:</label>
+                <input type="password" name="secondpw" id="secondpw" onBlur="allCheck()"/>&nbsp;<em class="secondShow"></em><em class="showWord"></em>
+            </div>
+            <label>验证码:</label>&nbsp;
+            <input type="text" id="input1" class="easyui-validatebox" onBlur="allCheck()" />
+            <input type="button" id="checkCode" class="code" style="width:60px;  background-image:url(images/111.jpg)" onClick="createCode()" /> <a href="#" onClick="createCode()" id="change">看不清楚</a><br/>
+            <span class="error">请输入验证码！</span>
+            <div class="ftitle">附加信息（可选）</div>
+            <div class="fitem">
+                <label>企业名称:</label>
+                <input name="entername" class="easyui-textbox">
+            </div>
+            <div class="ftitle"></div>
+            <div class="fagree">
+                <input id="agree" name="agree" checked="checked" title="是否同意服务条款" type="checkbox"><span>我已阅读并接受《<a href="#" target="_blank" style="color:#54c3f1">服务条款</a>》</span>
+            </div>
+            <div>
+            	<a href="javascript:void(0)" class="submit_btn" onClick="register()" data-options="iconCls:'icon-man'">立即注册</a>
+            </div>
+        </form>
+    </div>          
+</body>
+</html>
+
+

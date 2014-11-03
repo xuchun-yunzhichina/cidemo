@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>My FusionCharts</title>
+    <script type="text/javascript" src="../js/FusionCharts.js"></script>
+</head>
+<body>
+<div id="chartdiv_01" align="center"></div>
+<div id="chartdiv_02" align="center"></div>
+<script type="text/javascript">
+		$.ajax({
+		type:"GET",
+		datatype: "xml",
+		url: "/getenterreport",
+		success: function(data){			
+			_data = data;
+			myChart.setDataXML(_data);
+			myChart.render("chartdiv_01");
+			
+		},					 
+	});	
+
+	
+	var data = "<graph caption='租户统计' xAxisName='' yAxisName='' showNames='1' decimalPrecision='0' formatNumberScale='0' baseFontSize='14'>" +
+            "<set name='部门列表A' value='20' link='newchart-xml-2004-quarterly'/>" +
+            "<set name='部门列表B' value='15'/>" +
+            "<set name='部门列表C' value='25'/>" +
+            "<set name='部门列表D' value='10'/>" +
+            "<set name='部门列表E' value='30'/>" +
+            "<set name='部门列表F' value='10'/>" +
+			"<linkeddata id='2004-quarterly'>"  +
+"<graph caption='Quarterly Sales Summary' subcaption='For the year 2004' xAxisName='Quarter' yAxisName='Sales'>"  +
+"<set label='Q1' value='11700' />"  +
+"<set label='Q2' value='8600' />"  +
+"</graph>"  +
+"</linkeddata>"  +	"</graph>";
+
+
+    var myChart = new FusionCharts("../chart/FCF_Pie3D.swf", "chartdiv_01", "800", "600");
+
+	//myChart.setDataXML(data);
+	myChart.setDataURL('test.xml');
+    myChart.render("chartdiv_01");
+</script>
+</body>
+</html>

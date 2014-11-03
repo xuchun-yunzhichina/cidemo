@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Access-Control-Allow-Origin" content="*">
+  <link rel="stylesheet" type="text/css" href="/css/jquery.mobile.flatui.css" />
+  <link rel="stylesheet" type="text/css" href="/css/personinfo.css"/>
+  	
+  <script type="text/javascript" src="/js/flat-ui.min.js"></script>
+  <script type="text/javascript" src="/js/jquery-1.6.4.js"></script>
+  <script type="text/javascript" src="/js/phonegap-1.0.0.js"></script>
+  <script type="text/javascript" src="/js/jquery.js"></script>
+  <script type="text/javascript" src="/lib/mb.js"></script>
+    <script type="text/javascript" src="/js/jquery.mobile-1.0.min.js"></script>
+  <script type="text/javascript" src="/js/jquery.mobile-1.4.0-rc.1.js"></script>
+
+	<style type="text/css">
+	.department{
+		
+		margin:10px}
+	</style>
+
+<!-- 添加成员 -->
+<script type="text/javascript">
+		
+$(document).on("pageinit","#list",function(){
+		var oDept = {};
+	
+			$.ajax({
+			type:"POST",
+			url: "/getaddresslist",
+			success: function(data){		  				    				
+				oDept = data;
+				
+				for(var i = 0; i < oDept.length; i++){
+					$('#home').append("<div class ='department'>"+"<fieldset data-role='collapsible' data-collapsed-icon='arrow-d' data-expanded-icon='arrow-u'  data-theme='f'>"+"<legend>" + oDept[i].text + "</legend>"+"<ul data-role='listview' data-inset='true' data-theme='c' class='org'>").trigger('create');
+					
+					for(var j = 0; j < oDept[i].list.length; j++){
+						 $('.department:eq('+i+') ul').append("<li class='ui-first-child'  style='padding:2px 0px'><a class='ui-btn ui-shadow ui-corner-all ui-mini ui-icon-carat-r ui-btn-icon-right' href='#' onclick='openpanel()'>"  + oDept[i].list[j].name + "</a></li>").trigger('create');						
+					}				
+				}
+			},					 
+		});	   
+})
+    </script>
+    
+
+<!--     添加姓名 -->
+     <script type="text/javascript">
+	 
+	 function openpanel(){
+		 var e = window.event;
+		 var obj  = e.target || e.srcElement;
+		 var name = obj.innerHTML; //获取给员工的姓名
+		 $( "#person" ).panel("open");
+		 	$.ajax({
+			type:"POST",
+			url: "/getaddressdetail?name=" + name,
+			success: function(data){
+				$('#pername').val(data.name);
+				$('.phone').children().remove();
+				for(var i = 0; i < data.phone.length; i++){
+					$('.phone').append("<tr><th>"+data.phone[i].number+"</th>"+"<th><a  href='tel:"+data.phone[i].number+"'><img src='images/call.png' width='20px' height='15px'></a></th>"+"<th><a href='sms:"+data.phone[i].number+"'><img src='images/info.png' width='20px' height='15px'></a></th>"+"</tr>");
+				}
+				
+				$('#email').val(data.email);
+				
+				$( "#person" ).trigger("updatelayout"); 
+				
+			}
+			})
+	 }
+    </script>
+    
+    
+</head>
+<body>
+
+<div data-role="page" id = "list" > 
+	
+	<div data-role = "content" id = "home">
+    
+    </div>
+    
+	<div data-role="footer"  data-theme = "f" data-position = "fixed">
+    	<div data-role="navbar">
+            <ul>
+            	<li><a href="#" data-icon="comment"  onClick="goMsgPage()">消息</a></li>
+                <li><a href="#" data-icon="comment"  class="ui-btn-active"  onClick="goAddressPage()">通讯录</a></li>
+                <li><a href="#" data-icon="comment"  onClick="goAppPage()">应用</a></li>
+                <li><a href="#" data-icon="comment"  onClick="goSetupPage()">设置</a></li>
+            </ul>
+        </div>
+    </div>
+
+<!--                                       -->
+     <div data-role="panel" id="person" data-display="overlay" data-position="right" >
+ <div data-role="header" style="background:#6CF"  >
+<h1>PersonalInfo</h1>
+ </div>
+
+<div data-role="content">
+
+<form method="post" action="" > 
+<div >
+<label for="pername" >姓名：</label>
+<input type="text" name="pername" id="pername" readonly >
+
+<label for="phone" >联系电话：</label>
+
+<table class="phone" >
+
+</table>
+
+
+
+
+<label for="email" >邮箱：</label>
+<input type="email" name="email" id="email" readonly >
+
+</div>
+</form>
+
+</div>
+
+    </div>
+
+
+
+
+
+
+
+ 
+</body>
+
+</html>

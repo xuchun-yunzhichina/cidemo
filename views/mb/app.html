@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<script src="/js/jquery-1.6.4.js"></script>
+		<script type="text/javascript"src="/js/jquery.mobile-1.0.min.js"></script>
+		<link rel="stylesheet"href="/css/jquery.mobile-1.0.min.css"/>
+	</head>
+	<body>
+
+		<div data-role="page" id="home" data-theme="a">
+			<div data-role="header">
+ 			<h6>应用</h6>
+			</div>
+            
+			<div data-role="content">
+				<ul data-role="listview">
+					<li class="btn_a"><a href="http://www.baidu.com">我的考勤</a></li>
+		            <li class="btn_s"><a href="#services">会议预订</a></li>
+					<li class="btn_l"><a href="#locations">自助报销</a></li>
+				</ul>
+			</div>
+		</div>
+	</body>
+    
+	<style type="text/css">
+	.ui-page.ui-body-a.ui-page-active { background: #edeff1}
+	
+	/*body { background-color: #000; }*/
+	.ui-header {
+		border: none;
+		border-bottom: 1px solid #fff;
+		-moz-box-shadow: 0px 4px 5px rgba(0,0,0,.20);
+		-webkit-box-shadow: 0px 4px 5px rgba(0,0,0,.20);
+		box-shadow: 0px 4px 5px rgba(0,0,0,.20);
+		padding: 5px 0px 5px 0px;
+		background:#5DADE2;
+	}
+	
+	#home .ui-listview .ui-btn {
+		width: 75px;
+		display: inline-block;
+		/*background: url(./images/home_buttons.png) no-repeat 0px 0px;*/
+		border: none;
+		margin: 10px 20px 20px 20px;
+	}
+	
+	#home .ui-listview .ui-btn.btn_a { background: url(images/kaoqin.png) no-repeat 0px 0px;}
+	#home .ui-listview .ui-btn.btn_s { background: url(images/huiyi.png) no-repeat 0px 0px;}
+	#home .ui-listview .ui-btn.btn_l { background: url(images/baoxiao.png) no-repeat 0px 0px;; }
+	#home .ui-listview .ui-btn.btn_c { background: url(images/th_Apps.png) no-repeat 0px 0px; }
+	
+	#home .ui-listview .ui-btn .ui-li { border: none; }
+	#home .ui-listview .ui-btn .ui-li .ui-icon { display: none; }
+	#home .ui-listview .ui-btn .ui-li .ui-link-inherit { font-size: .8em; font-weight: normal; padding: 80px 0px 0px 0px; text-align: center; }
+
+
+	
+	</style>
+
+
+	<div data-role="#about_us" data-theme="a">
+    	
+    </div>
+    
+    
+
+      
+</html>
